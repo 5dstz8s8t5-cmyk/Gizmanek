@@ -1,6 +1,0 @@
-# jeden symbol Stooq w linii (po # komentarz)
-pko   # PKO BP
-asb   # Asbis
-pkn   # PKN Orlen
-# etfbdivpl
-# eurpln  (kurs EUR/PLN, jesli aktywo notowane w EUR)
