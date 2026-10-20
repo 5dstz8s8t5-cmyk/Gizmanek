@@ -1,8 +1,15 @@
 name: prices
 on:
   schedule:
+    - cron: '*/30 7-15 * * 1-5'
     - cron: '30 16 * * 1-5'
   workflow_dispatch:
+    inputs:
+      mode:
+        description: quotes lub all
+        default: all
+concurrency:
+  group: prices
 permissions:
   contents: write
 jobs:
@@ -10,9 +17,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: python3 fetch_prices.py
+      - run: python3 fetch_prices.py ${{ github.event.inputs.mode || (github.event.schedule == '30 16 * * 1-5' && 'all' || 'quotes') }}
       - run: |
           git config user.name "prices-bot"
           git config user.email "prices-bot@users.noreply.github.com"
           git add prices.json
-          git diff --cached --quiet || (git commit -m "kursy" && git push)
+          if [ -f history.json ]; then git add history.json; fi
+          git diff --cached --quiet || (git commit -m "kursy" && git pull --rebase -q && git push)
