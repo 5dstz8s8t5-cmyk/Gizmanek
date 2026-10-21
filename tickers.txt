@@ -1,7 +1,0 @@
-# jeden symbol Stooq w linii; po # komentarz
-# GPW: symbol + .pl (bez kropki dopiszemy .pl automatycznie)
-pko.pl   # PKO BP
-asb.pl   # Asbis
-pkn.pl   # PKN Orlen
-# etfbdivpl.pl
-# eurpln   # kurs EUR/PLN, jesli aktywo notowane w EUR
