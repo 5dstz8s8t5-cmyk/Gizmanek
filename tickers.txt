@@ -1,0 +1,9 @@
+# Jeden symbol w linii. GPW: kod + .pl (np. pko.pl) - Yahoo dostaje PKO.WA.
+# Wlasny symbol Yahoo mozna podac po znaku =, np.:  xtb.pl = XTB.WA
+pko.pl          # PKO BP
+asb.pl          # Asbis
+pkn.pl          # PKN Orlen
+etfbdivpl.pl    # ETF BETA - sprawdz w logu, czy symbol dziala
+xtb.pl          # XTB
+# etfpzuworld.pl   # ETF PZU - sprawdz symbol, potem odkomentuj
+# eurpln           # kurs EUR/PLN, jesli aktywo notowane w EUR
