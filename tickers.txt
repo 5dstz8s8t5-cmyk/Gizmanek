@@ -3,7 +3,7 @@
 pko.pl          # PKO BP
 asb.pl          # Asbis
 pkn.pl          # PKN Orlen
-etfbdivpl.pl    # ETF BETA - sprawdz w logu, czy symbol dziala
+etfbdivpl.pl    # ETF BETA
 xtb.pl          # XTB
-# etfpzuworld.pl   # ETF PZU - sprawdz symbol, potem odkomentuj
+etfpzuworld.pl   # ETF PZU
 # eurpln           # kurs EUR/PLN, jesli aktywo notowane w EUR
