@@ -6,4 +6,5 @@ pkn.pl          # PKN Orlen
 etfbdivpl.pl    # ETF BETA
 xtb.pl          # XTB
 etfpzuworld.pl   # ETF PZU
+etfbspxpl.pl # ETFBSPXPL
 # eurpln           # kurs EUR/PLN, jesli aktywo notowane w EUR
