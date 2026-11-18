@@ -30,7 +30,7 @@ for line in open("tickers.txt", encoding="utf-8"):
     k = norm(k.strip())
     items.append((k, y.strip().upper() or ysym(k)))
 
-p, errs, h = {}, [], {}
+p, errs, h, dl = {}, [], {}, {}
 if os.path.exists("history.json"):
     try:
         h = json.load(open("history.json", encoding="utf-8")).get("h", {})
@@ -39,13 +39,21 @@ if os.path.exists("history.json"):
 
 for s, y in items:
     try:
-        df = yf.Ticker(y).history(period="3y" if mode == "all" else "5d", interval="1d", auto_adjust=False)
-        df = df.dropna(subset=["Close"])
-        if df.empty:
-            raise Exception("Yahoo nie zwrocilo danych dla symbolu " + y)
+        df, err0 = None, None
+        for wait in (0, 8, 25):
+            time.sleep(wait)
+            try:
+                df = yf.Ticker(y).history(period="3y" if mode == "all" else "5d", interval="1d", auto_adjust=False).dropna(subset=["Close"])
+                if not df.empty:
+                    break
+            except Exception as e0:
+                err0 = e0
+        if df is None or df.empty:
+            raise Exception("Yahoo nie zwrocilo danych dla symbolu " + y + (" (" + str(err0)[:80] + ")" if err0 else ""))
         closes = {i.strftime("%Y-%m-%d"): float(c) for i, c in zip(df.index, df["Close"])}
         price = float(df["Close"].iloc[-1])
         p[s] = price
+        dl[s] = max(closes)
         if mode == "all":
             d = h.setdefault(s, {})
             for date, c in closes.items():
@@ -60,7 +68,7 @@ for s, y in items:
 if not p:
     sys.exit("Brak notowan - nie zapisuje plikow")
 now = NOW.strftime("%Y-%m-%dT%H:%M")
-json.dump({"u": now, "p": p}, open("prices.json", "w"))
+json.dump({"u": now, "p": p, "d": dl}, open("prices.json", "w"))
 if mode == "all":
     json.dump({"u": now, "h": h}, open("history.json", "w"), separators=(",", ":"))
 print("Zapisano:", len(p), "z", len(items), "symboli; bledy:", errs)
