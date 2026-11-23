@@ -19,16 +19,28 @@ jobs:
       - uses: actions/checkout@v4
       - name: Co uruchomilo workflow
         run: echo "event=${{ github.event_name }} cron=${{ github.event.schedule }} utc=$(date -u +%Y-%m-%dT%H:%M)"
+      - name: Galaz danych (kursy trafiaja do galezi data, nie do main)
+        run: |
+          rm -rf data
+          URL="https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"
+          if git ls-remote --exit-code --heads origin data >/dev/null 2>&1; then
+            git clone -q --depth 1 --branch data "$URL" data
+          else
+            mkdir data && cd data && git init -q && git checkout -q -b data && git remote add origin "$URL"
+          fi
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - run: pip install --quiet yfinance
       - env:
           MODE: ${{ github.event.inputs.mode || (github.event.schedule == '35 16 * * 1-5' && 'all' || 'quotes') }}
+          OUT: data
         run: python fetch_prices.py "$MODE" || (sleep 120 && python fetch_prices.py "$MODE")
-      - run: |
+      - name: Zapis do galezi data
+        run: |
+          cd data
           git config user.name "prices-bot"
           git config user.email "prices-bot@users.noreply.github.com"
           git add prices.json
           if [ -f history.json ]; then git add history.json; fi
-          git diff --cached --quiet || (git commit -m "kursy [skip ci]" && git pull --rebase -q && git push)
+          git diff --cached --quiet || (git commit -q -m "kursy" && git push -q origin HEAD:data)
