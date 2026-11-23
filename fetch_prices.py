@@ -2,6 +2,7 @@ import json, os, sys, time, datetime
 import yfinance as yf
 
 mode = sys.argv[1] if len(sys.argv) > 1 else "quotes"
+OUT = os.environ.get("OUT", ".")
 NOW = datetime.datetime.now(datetime.timezone.utc)
 TODAY = NOW.strftime("%Y-%m-%d")
 AFTER_CLOSE = NOW.hour * 60 + NOW.minute >= 16 * 60 + 10   # po zamknieciu GPW takze zima (16:05 UTC)
@@ -31,9 +32,9 @@ for line in open("tickers.txt", encoding="utf-8"):
     items.append((k, y.strip().upper() or ysym(k)))
 
 p, errs, h, dl = {}, [], {}, {}
-if os.path.exists("history.json"):
+if os.path.exists(os.path.join(OUT, "history.json")):
     try:
-        h = json.load(open("history.json", encoding="utf-8")).get("h", {})
+        h = json.load(open(os.path.join(OUT, "history.json"), encoding="utf-8")).get("h", {})
     except Exception:
         h = {}
 
@@ -68,7 +69,7 @@ for s, y in items:
 if not p:
     sys.exit("Brak notowan - nie zapisuje plikow")
 now = NOW.strftime("%Y-%m-%dT%H:%M")
-json.dump({"u": now, "p": p, "d": dl}, open("prices.json", "w"))
+json.dump({"u": now, "p": p, "d": dl}, open(os.path.join(OUT, "prices.json"), "w"))
 if mode == "all":
-    json.dump({"u": now, "h": h}, open("history.json", "w"), separators=(",", ":"))
+    json.dump({"u": now, "h": h}, open(os.path.join(OUT, "history.json"), "w"), separators=(",", ":"))
 print("Zapisano:", len(p), "z", len(items), "symboli; bledy:", errs)
